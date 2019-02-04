@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+{% autoescape true %}
+<html>
+  <!--START HEAD-->
+  <head>
+  <title>Pick Up Games</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--MATERIAL DESIGN-->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-orange.min.css" />
+    <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+    <!--JQUERY-->
+	<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+	<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <!--DROPZONE-->
+  	<link rel="stylesheet" href="static/dropzone.css">
+	<script src="static/dropzone.js"></script>
+  </head>
+  <!--END HEAD-->
+
+  <body>
+
+    <!--START HEADER-->
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+      <header class="mdl-layout__header">
+        <div class="mdl-layout__header-row">
+          <!-- Title -->
+          <span class="mdl-layout-title">Pick Up Sports</span>
+          <!-- Add spacer, to align navigation to the right -->
+          <div class="mdl-layout-spacer"></div>
+          <!-- Navigation. We hide it in small screens. -->
+          <nav class="mdl-navigation mdl-layout--large-screen-only">
+            <a class="mdl-navigation__link" href="/">Home</a>
+            <a class="mdl-navigation__link" href="/themes">Themes</a>
+            <a class="mdl-navigation__link" href="/map">Map</a>
+            <a class="mdl-navigation__link" href="/profile">Profile</a>
+            <!-- Accent-colored raised button with ripple -->
+            <button onclick="loginOrLogOutButton()" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+              {% if user %}
+                {{ url_linktext }} of {{ user.email() }}
+              {% else %}
+                {{ url_linktext }}
+              {% endif %}
+            </button>
+            <script>
+              function loginOrLogOutButton() {
+                location.href = "{{ url|safe}}";
+              }
+            </script>
+          </nav>
+        </div>
+      </header>
+      <!--END HEADER-->
+
+      <!--START MENU-->
+      <div class="mdl-layout__drawer">
+        <span class="mdl-layout-title">Pick Up Sports</span>
+        <nav class="mdl-navigation">
+          <a class="mdl-navigation__link" href="/">Home</a>
+          <a class="mdl-navigation__link" href="/themes">Themes</a>
+          <a class="mdl-navigation__link" href="/map">Map</a>
+          <a class="mdl-navigation__link" href="/profile">Profile</a>
+        </nav>
+      </div>
+      <!--END MENU-->
+
+      <!--START PAGE CONTENT-->
+      <main class="mdl-layout__content"><br><br>
+        <div class="page-content">
+          <div class="mdl-grid">
+
+            {% if user %}
+              <!--SIGNED IN: START FIRST COLUMN-->
+              <div class="mdl-cell mdl-cell--4-col mdl-cell--order-1-tablet mdl-cell--order-1-phone">
+                <div class="demo-card-wide mdl-card mdl-shadow--2dp" style="width:100%">
+                  <div class="mdl-card__title">
+                    <h2 class="mdl-card__title-text"><i>Manage Theme Subscriptions</i></h2>
+                  </div>
+                  <div class="mdl-card__actions mdl-card--border"></div>
+                    <form action="/manage_subscriptions" name="sport_theme_names" method="POST">
+                      <ul class="demo-list-control mdl-list">
+                        {% for sti in sport_themes_and_images %}
+                            <li class="mdl-list__item">
+                              <span class="mdl-list__item-primary-content">
+                                {{ sti[0].name }}
+                              </span>
+                              <span class="mdl-list__item-secondary-action">
+                                <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="{{ sti[0].name }}">
+                                  {% if sti[0].key in creator.subscribed_sport_themes %}
+                                    <input type="checkbox" name="sport_theme_name" id="{{ sti[0].name }}" value="{{ sti[0].name }}" class="mdl-checkbox__input" checked />
+                                  {% else %}
+                                    <input type="checkbox" name="sport_theme_name" id="{{ sti[0].name }}" value="{{ sti[0].name }}" class="mdl-checkbox__input"/>
+                                  {% endif %}
+                                </label>
+                              </span>
+                            </li>
+                        {% endfor %}
+                      </ul>
+                      <div>
+                        &nbsp;&nbsp;
+                        <input type="submit" id="submit-subscriptions" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"
+                               value="Subscribe">
+                      </div><br><br>
+                    </form>
+                </div>
+              </div>
+              <!--SIGNED IN: END FIRST COLUMN-->
+
+            {% else %}
+              <!--SIGNED OUT: START FIRST COLUMN-->
+                <div class="mdl-cell mdl-cell--4-col mdl-cell--order-1-tablet mdl-cell--order-1-phone"></div>
+              <!--SIGNED OUT: END FIRST COLUMN-->
+            {% endif %}
+
+            {% if user %}
+              <!--SIGNED IN: START MIDDLE COLUMN-->
+              <div class="mdl-cell mdl-cell--4-col mdl-cell--order-3-tablet mdl-cell--order-3-phone">
+                <div class="demo-card-wide mdl-card mdl-shadow--2dp" style="width:100%">
+                  <div class="mdl-card__title">
+                    <h2 class="mdl-card__title-text"><i>Location Reports</i></h2>
+                  </div>
+                  <!--START LOCATION REPORTS-->
+                  {% for lr in location_reports %}
+                  <div class="demo-card-wide mdl-card mdl-shadow--2dp" style="width:100%">
+                    <div class="mdl-card__title">
+                      <h2 class="mdl-card__title-text"><b>{{ lr.name }}</b></h2>
+                    </div>
+                      <div class="mdl-card__media">
+                        <img src="{{ lr.image_url }}" width=50% border="0" alt="Location Report Image" style="margin-left:25%;">
+                      </div>
+                    <div class="mdl-card__supporting-text">
+                      <b><i>Address:</i></b>&nbsp{{ lr.address }}<br>
+                      <b><i>Sport Theme:</i></b>&nbsp{{ lr.sport_theme.get().name }}<br>
+                      <b><i>Tags:</i></b>&nbsp{{ lr.tag_name_string }}<br>
+                    </div>
+                  </div><br><br>
+                  {% endfor %}
+                </div>
+                <!--END LOCATION REPORTS-->
+              </div>
+              <!--SIGNED IN: END MIDDLE COLUMN-->
+
+            {% else %}
+              <!--SIGNED OUT: START MIDDLE COLUMN-->
+              <div class="mdl-cell mdl-cell--4-col mdl-cell--order-2-tablet mdl-cell--order-2-phone">
+                <!--START LOGIN CARD-->
+                <div class="demo-card-wide mdl-card mdl-shadow--2dp" style="width:100%; height:260px;">
+                  <div class="mdl-card__title">
+                    <h2 class="mdl-card__title-text"><i>Welcome </i></h2>
+                  </div>
+                  <div class="mdl-card__supporting-text">
+                    Please log in to see awesome new spots to play pick up games.
+                    <br><br>
+                  </div>
+                  <div class="mdl-card__actions mdl-card--border">
+                    <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" href="{{ url|safe}}">
+                      {{ url_linktext }}
+                    </a>
+                  </div>
+                </div>
+              </div>
+              <!--SIGNED OUT: END MIDDLE COLUMN-->
+            {% endif %}
+
+            <!--START LAST COLUMN-->
+            <div class="mdl-cell mdl-cell--4-col mdl-cell--order-2-tablet mdl-cell--order-2-phone">
+              <div class="demo-card-wide mdl-card mdl-shadow--2dp" style="margin-left:5%;">
+                <div class="mdl-card__title">
+                  <h2 class="mdl-card__title-text"><i>Search</i></h2>
+                </div>
+                <!--START SEARCH CARD-->
+                <div class="demo-card-wide mdl-card mdl-shadow--2dp" style="width:100%">
+                  <div class="mdl-card__supporting-text">
+                    <form action="/search" method="POST">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input class="mdl-textfield__input" name="tags" type="text" id="search-bar">
+                        <label class="mdl-textfield__label" for="search-bar">Tags...</label>
+                      </div>
+                      Search all location reports by tags.
+                      <div class="mdl-card__actions">
+                        <div>
+                          <input type="submit"
+                            class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"
+                            value="Search Location Reports">
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+
+                <!--END SEARCH CARD-->
+              </div>
+            </div>
+            <!--END LAST COLUMN-->
+
+          </div>
+        </div>
+      </main>
+    </div>
+    <!--END CONTENT-->
+
+    <!--START JAVASCRIPTING-->
+    {% block javascript %}
+
+    <!--START SEARCH JQUERY-->
+      <script>
+          var passed_data = {{ all_tag_names | safe }}
+          $( "#search-bar" ).autocomplete({
+            source: passed_data
+          });
+      </script>
+    <!--END SEARCH JQUERY-->
+
+    {% endblock %}
+    <!--END JAVASCRIPTING-->
+
+  </body>
+</html>
+{% endautoescape %}

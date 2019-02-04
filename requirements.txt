@@ -1,0 +1,4 @@
+GoogleAppEngineCloudStorageClient==1.9.22.1
+google-api-python-client==1.5.5
+google-auth
+requests>=2.0,<2.16

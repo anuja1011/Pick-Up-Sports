@@ -1,0 +1,61 @@
+runtime: python27
+api_version: 1
+threadsafe: true
+
+#[START env]
+env_variables:
+    CLOUD_STORAGE_BUCKET: pick-up-sports-images
+#[END env]
+
+# [START handlers]
+handlers:
+
+- url: /send_mail
+  script: handlers.mail.app
+
+- url: /static
+  static_dir: static
+
+- url: /bootstrap
+  static_dir: bootstrap
+
+- url: /map
+  script: handlers.map.app
+
+- url: /theme_images
+  script: handlers.theme.app
+
+- url: /themes/mobile/*
+  script: handlers.theme.app
+
+- url: /themes
+  script: handlers.theme.app
+
+- url: /search
+  script: handlers.search.app
+
+- url: /manage_subscriptions
+  script: handlers.profile.app
+
+- url: /profile/mobile/*
+  script: handlers.profile.app
+
+- url: /profile
+  script: handlers.profile.app
+
+- url: /mobile/*
+  script: handlers.home.app
+
+- url: /.*
+  script: handlers.home.app
+# [END handlers]
+
+# [START libraries]
+libraries:
+- name: webapp2
+  version: latest
+- name: jinja2
+  version: latest
+- name: ssl
+  version: latest
+# [END libraries]

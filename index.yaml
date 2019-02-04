@@ -1,0 +1,6 @@
+indexes:
+- kind: Random
+  properties:
+  - name: user_email
+  - name: date
+    direction: desc

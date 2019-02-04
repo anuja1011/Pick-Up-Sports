@@ -1,0 +1,4 @@
+cron:
+- description: "Send_report"
+  url: /send_mail
+  schedule: every 24 hours
